@@ -1,5 +1,5 @@
 # Web App Project
-Simple webpage simulating an online marketplace platform for musicians and event holders to post their gig opportunities
+Simple webpage simulating an online marketplace platform for musicians and event holders to post their performing opportunities.
 
 Technologies used:
 - HTML
