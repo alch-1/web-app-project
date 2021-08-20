@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+      crossorigin="anonymous"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script type="text/javascript" src="app.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.js"></script>
+    <!-- Redirect Logic -->
+    <script>
+      if (localStorage.getItem("username") == null) {
+        window.location.href = "./home.html"
+      }
+    </script>
+  </head>
+  <body>
+    <div>
+      <div id="navbar-main">
+        <navbar-container
+          :user-Name="userName"
+          :biz-owner="bizOwner"
+          :current-page="currentPage"
+          :url="url"
+        />
+      </div>
+
+      <div class="container mt-4" id="table-display">
+        <h3 id="table-display-title">Gigs Overview</h3>
+        <div class="table-responsive-sm">
+          <table class="table">
+            <thead class="thead-light" id="table-display-head">
+              <tr v-if="displayAll">
+                <th scope="col">#</th>
+                <th scope="col">Date Posted</th>
+                <th scope="col">Title</th>
+                <th scope="col">Status</th>
+                <th scope="col">Applicants</th>
+              </tr>
+              <tr v-else>
+                <th scope="col">#</th>
+                <th scope="col">Date</th>
+                <th scope="col">Applicant</th>
+                <th scope="col">Email</th>
+                <th scope="col">Accept</th>
+              </tr>
+            </thead>
+            <tbody v-if="displayAll" id="table-display-body">
+              <template v-for="item in allItems">
+                <tr>
+                  <th scope="row">{{item.number}}</th>
+                  <th scope="row">{{item.date}}</th>
+                  <td>Gig {{item.gig}}</td>
+                  <td>{{item.status}}</td>
+                  <td>
+                    <button
+                      type="button"
+                      class="btn btn-info btn-sm mt-n2"
+                      @click="displayGig"
+                      :value="item.id"
+                    >
+                      View
+                    </button>
+                  </td>
+                </tr>
+              </template>
+            </tbody>
+            <tbody v-else id="table-display-body">
+              <template v-for="each in gigItems">
+                <tr>
+                  <th scope="row">{{each.number}}</th>
+                  <th scope="row">{{each.date}}</th>
+                  <td >
+                    <a @click="sendUserInfo" :value="each.musicianId">
+                      {{each.name}}
+                      <img
+                        src="./images/user.png"
+                        width="20"
+                        height="20"
+                        class="d-inline-block align-top table-entry-profile"
+                        alt=""
+                        :value="each.musicianId"
+                      />
+                    </a>
+                  </td>
+                  <td>{{each.email}}</td>
+                  <td>
+                    <!-- <a href="./myGigs.html"> -->
+                    <button
+                      type="button"
+                      class="btn btn-info btn-sm mt-n2"
+                      @click="acceptGig"
+                      :value="[each.gigId, each.musicianId]"
+                    >
+                      Accept
+                    </button>
+                    <!-- </a> -->
+                  </td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <script
+      src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+      integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+      integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+      integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      var vm = new Vue({
+        el: "#navbar-main",
+        data: {
+          userName: "asdasdas",
+          bizOwner: true,
+          currentPage: "myGigs",
+        },
+        created: function () {
+          // call api here to find props
+          console.log(this.userName);
+          this.userName = "WEEEEEEEEE";
+          console.log(this.userName);
+        },
+      });
+
+      new Vue({
+        el: "#table-display",
+        data: {
+          allItems: [
+            {
+              id: "1",
+              number: "1",
+              date: "15/15/15",
+              status: "OPEN",
+              gig: "XYZ",
+            },
+            {
+              id: "2",
+              number: "2",
+              date: "20/20/200000020",
+              status: "CLOSED",
+              gig: "ABC",
+            },
+          ],
+          displayAll: true,
+          gigItems: [
+            {
+              gigId: "1",
+              musicianId: "100",
+              number: "5",
+              date: "05/05/05",
+              name: "ayy lmao",
+              email: "foo@bar.com",
+            },
+            {
+              gigId: "1",
+              musicianId: "104",
+              number: "6",
+              date: "25/35/05",
+              name: "batman",
+              email: "batman@superman.com",
+            },
+            {
+              gigId: "2",
+              musicianId: "220",
+              number: "9",
+              date: "13/109/1123",
+              name: "shrek",
+              email: "donkey@fiona.com",
+            },
+          ],
+          posts: [],
+        },
+        methods: {
+          displayGig: function (event) {
+            // call db and get all musicians who applied for this gig
+            var gigId = event.target.value;
+            this.displayAll = !this.displayAll;
+            let temp = [];
+            for (each of this.gigItems) {
+              if (gigId == each.gigId) {
+                temp.push(each);
+              }
+            }
+            this.gigItems = temp;
+            var title = `Gig ID: ${gigId}`;
+            document.querySelector("#table-display-title").innerHTML = title;
+          },
+          acceptGig: function (event) {
+            // send info to db
+            var values = event.target.value.split(",");
+            var gigId = values[0];
+            var musicianId = values[1];
+            console.log(gigId);
+            console.log(musicianId);
+          },
+          sendUserInfo: function (event) {
+            console.log(event.target.value);
+            console.log(event.target);
+          },
+        },
+        created: function () {
+          var vm = this;
+          // Fetch our array of posts from an API
+          fetch("https://jsonplaceholder.typicode.com/posts")
+            .then(function (response) {
+              return response.json();
+            })
+            .then(function (data) {
+              vm.posts = data;
+            });
+        },
+      });
+    </script>
+  </body>
+</html>

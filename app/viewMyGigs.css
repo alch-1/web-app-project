@@ -1,0 +1,81 @@
+body {
+    background-color: #30343b;
+    color: white;
+    
+}
+
+head{
+    background-color: #000000;
+}
+
+.navbar {
+    background-color: #000000;
+    opacity: 65%;
+}
+
+.navbar-brand {
+    color: white;
+}
+
+.nav-item {
+    color: white;
+}
+
+h1{
+    padding: 10px; 
+    background-color: #30343b;
+    margin-bottom: 0px;
+}
+
+thead{
+    background-color: #92bcea;
+    color: #000000;
+    font-weight: bold;
+}
+
+table{
+    color: white;
+}
+
+.profile-btn {
+    float: right;
+  }
+
+#my_container{
+    width: 90%;
+    /* margin-top: 50px; */
+    
+}
+
+#outerContainerView,
+#outerContainerAccept {
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  height: 100vh;
+  /* margin-top: 50px; */
+}
+
+.gig-heading, .req-heading{
+  padding-top: 90px;
+}
+
+#outerContainerView, .gig-heading{
+    background-image: url(./images/concert2.jpeg);
+
+}
+
+#outerContainerAccept, .req-heading{
+    background-image: url(./images/acceptRequest-bg.jpg);
+
+}
+
+
+.modal-header, .modal-body{
+    color:#000000;
+}
+
+.req-no-app{
+  padding-top: 90px;
+}

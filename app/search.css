@@ -1,0 +1,83 @@
+.input-group.md-form.form-sm.form-1 input {
+    border: 1px solid #bdbdbd;
+    border-top-right-radius: 0.25rem;
+    border-bottom-right-radius: 0.25rem;
+  }
+
+.input-group.md-form.form-sm.form-2 input {
+  border: 1px solid #bdbdbd;
+  border-top-left-radius: 0.25rem;
+  border-bottom-left-radius: 0.25rem;
+}
+
+.input-group.md-form.form-sm.form-2 input.red-border {
+  border: 1px solid #ef9a9a;
+}
+
+.input-group.md-form.form-sm.form-2 input.lime-border {
+  border: 1px solid #cddc39;
+}
+
+.input-group.md-form.form-sm.form-2 input.amber-border {
+  border: 1px solid #ffca28;
+}
+
+.jumbotron{
+  background-size: cover;
+  height: 70vh;
+  min-height: 500px;
+  padding: 15%;
+}
+
+.jumbotron-gig, .jumbotron-music {
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.jumbotron-gig{
+  background-image: url('./images/concert1.jpeg');
+}
+
+.jumbotron-music{
+  background-image: url('./images/concert.jpeg');
+  
+}
+
+body {
+  background-color: #30343b;
+  
+}
+
+.navbar {
+  background-color: #000000;
+  opacity: 85%;
+}
+
+.navbar-brand {
+  color: white;
+}
+
+.nav-link {
+  color: white;
+}
+
+.fa {
+  padding: 20px;
+  font-size: 30px;
+  width: 50px;
+  text-align: center;
+  text-decoration: none;
+  background-color: #000000;
+  color: white;
+}
+
+footer {
+  color:white;
+}
+
+.card-img-top {
+  width: 100%;
+  height: 15vw;
+  object-fit: cover;
+}

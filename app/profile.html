@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- bootstrap css -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link href="./hover.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://unpkg.com/axios/dist/axios.js"></script>
+    <!-- development version, includes helpful console warnings -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script type="text/javascript" src="app.js"></script>
+    
+    <!-- axios -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <!-- Redirect Logic -->
+    <script>
+      if (localStorage.getItem("username") == null) {
+        window.location.href = "./home.html"
+      }
+    </script>
+
+    <title>Profile</title>
+
+    <style type="text/css">
+        body {
+          background-color: #343A40;
+          color: white;
+          border: 1px solid #343A40;
+          outline-color: #343A40;
+          background: url(images/darkGuitar4.jpg);
+          background-attachment: fixed;
+          background-position: center;
+          background-repeat: no-repeat;
+          background-size: cover;
+        }
+        .card-img {
+            height: auto;
+            width: 100%;
+        }
+
+
+        .navbar {
+        background-color: #000000;
+        opacity: 85%;
+        }
+
+        .navbar-brand {
+        color: white;
+        }
+
+        .nav-link {
+        color: white;
+        }
+
+        .cutoff {
+            object-fit: cover;
+            background: url(images/gig1.jpg);
+            /* 50% 50% centers image in div */
+            max-width: 100%;
+            height: 250px;
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        .fa {
+        padding: 20px;
+        font-size: 30px;
+        width: 50px;
+        text-align: center;
+        text-decoration: none;
+        background-color: #000000;
+        color: white;
+        }
+
+        footer {
+        color:white;
+        }
+
+        .row.vertical-divider {
+        overflow: hidden;
+        }
+        .row.vertical-divider > div[class^="col-"] {
+        text-align: center;
+        padding-bottom: 100px;
+        margin-bottom: -100px;
+        border-left: 1px solid #5E5F61;
+        border-right: 1px solid #5E5F61;
+        }
+        .row.vertical-divider div[class^="col-"]:first-child {
+        border-left: none;
+        }
+        .row.vertical-divider div[class^="col-"]:last-child {
+        border-right: none;
+        }
+
+        body, .card-body {
+        background-color: #343A40;
+        color: white;
+        border: 1px solid #343A40;
+        outline-color: #343A40;
+        }
+        
+        .fade {
+        color: #343A40;
+        }
+        .card-title {
+        color: #92bcea
+        }
+        .card-body{
+        background-color: #23292E;
+        }
+
+        
+        .navbar {
+            background-color: #000000;
+            opacity: 85%;
+        }
+
+        .navbar-brand {
+            color: white;
+        }
+
+        .nav-link {
+            color: white;
+        }
+
+        .header {
+            margin-top: 70px;
+        }
+    </style>
+
+
+</head>
+<body>    
+    <!-- Navbar -->
+    <div id="navbar-main">
+        <navbar-container
+        :user-name="userName"
+        :biz-owner="bizOwner"
+        current-page="profile"
+        :url="url"
+        />
+    </div>
+    
+    <!-- Profile Page -->
+    <div id="app">
+        <div class="card mb-4 w-75 mx-auto header">
+            <img class="cutoff img-fluid card-img-top" id="image" v-bind:src="getImg(bandImage)" v-bind:alt="bandImage"/>
+            <div class="card-body">
+                <h5 class="card-title card-heading text-center" id='title'>
+                  <div class="spinner-border text-justify mx-auto" role="status" id="loading-spinner">
+                  </div>
+                  {{bandName}}
+                </h5>
+                <p class="card-text text-center">{{ summary }}</p>
+                <div class="row vertical-divider">
+                    <!-- Left side -->
+                    <div v-if="hasMembers === true" class="col-lg col-md col-sm-12 col-xs-12">
+                        <h5 class="card-title card-heading text-center">Band Members</h5>
+                        <div class="row row-cols-2 justify-content-center">
+                            <div v-for="bandMember in bandMembers">
+                                <div class="col mt-2">  
+                                    <!-- <img class="rounded-circle shadow-lg" v-bind:src="'./images/' + bandMember.image" data-holder-rendered="true"> -->
+                                    <img class="rounded shadow-sm card-img" v-bind:src="getImg(bandMember.image)" data-holder-rendered="true" v-bind:alt="bandMember.image">
+                                </div>
+    
+                                <div class="col mt-2 text-center">
+                                    <span style="font-weight:bold;">{{ bandMember.name }}</span>
+                                    <br>
+                                    <span class> {{ bandMember.role }} </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right side -->
+                    <div v-if="hasExperience === true" class="col-lg col-md col-sm-12 col-xs-12">
+                        <h5 class="card-title card-heading text-center">Experience</h5>
+                        <div v-for="gig in gigs">
+                            <div class="row justify-content-center mb-2">
+                                <div class="col-sm">
+                                    <img class="card-img rounded shadow-sm" v-bind:src="getImg(gig.image)" v-bind:alt="'./images/' + gig.image">
+                                </div>
+    
+                                <div class="col-sm">
+                                    <h5>{{ gig.location }}</h5>
+                                    <p class="text-muted">{{ gig.date }}</p>
+                                    <p>{{ gig.description }}</p>
+                                </div>
+                            </div>
+                            <!-- <hr> -->
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+        
+    <div class="container-fluid pt-2" style="background-color: black;">
+        <footer class="text-right">
+          <div class="pr-4">
+            Gig-E Pte Ltd.<br>
+          </div>
+          <a href="#" class="fa fa-facebook"></a>
+          <a href="#" class="fa fa-twitter"></a>
+          <a href="#" class="fa fa-instagram"></a>
+        </footer>
+      </div>
+
+    <script>
+        new Vue({
+            el: "#navbar-main",
+            data: {
+                userName: "zxc12123c",
+                bizOwner: false,
+                currentPage: "myGigs",
+                url:"",
+            },
+            created: function() {
+                // call api here to find props
+                this.userName = localStorage.getItem("username");
+                this.bizOwner = localStorage.getItem("userType") == "seeker" ? true : false;
+                var url = "../backend/api/band/getBandByUsername.php";
+                axios
+                  .get(url, {
+                    params: {
+                      "username": localStorage.getItem("username"),
+                    },
+                  })
+                  .then((response) => {
+                    console.log(response.data.bands[0].bandName);
+                    this.url = `./profile.html?bandName=${response.data.bands[0].bandName}`;
+                  })
+                  .catch((error) => {
+                    console.log("There was an error: " + error.message);
+                  });
+            }
+        });
+        var app = new Vue({
+            el: '#app',
+            mounted() {
+                this.getAllInfo();
+            },
+            data: {
+                bandName: '',
+                genre: 'Rock',
+                bandType: 'band',
+                website : "http://www.google.com",
+                summary: 'Loading...',
+                bandImage: '',
+                bandMembers : [
+                    // {
+                    //     name: "Tuomas Holopainen",
+                    //     image: "tuomas.jpg",
+                    //     role: "Songwriter"
+                    // },
+                ],
+                gigs: [
+                    // {
+                    //     date: "1/8/2017",
+                    //     location: "Hilton Singapore",
+                    //     description: "Performed a live concert at Hilton Singapore",
+                    //     image: "performance.jpg"
+                    // },
+                ],
+                hasMembers: false,
+                hasExperience: false
+            },
+            methods: {
+                getAllInfo() {
+                    // get parameters from current url
+                    var params = new URLSearchParams(location.search);
+
+                    // get bandName from current url
+                    var bandName = params.get('bandName');
+                    var vue = this;
+                    Promise.all([this.getBandInfo(), this.getBandMembers(), this.getExperience()]).then(
+                        function(results) {
+                            // save response
+                            var info = results[0]; // searchBandsByName
+                            var members = results[1];
+                            var experience = results[2];
+
+                            console.log(info);
+                            console.log(members);
+
+                            // handle info 
+                            info = info.data.bands[0];
+
+                            console.log(info);
+
+                            // get values
+                            var summary = info.summary;
+                            var bandType = info.bandType;
+                            var bandImage = info.image;
+
+                            // update values
+                            vue.bandName = bandName;
+                            document.querySelector("#loading-spinner").remove();
+                            vue.summary = summary;
+                            vue.bandType = bandType;
+                            vue.bandImage = bandImage;
+
+                            // handle members
+                            members = members.data.bandMembers;
+                            console.log(members);
+                            // return;
+                            if (typeof(members) != "undefined") {
+                                if (members.length > 0) { 
+                                    vue.hasMembers = true;
+
+                                    // iterate through members
+                                    for (var i = 0; i < members.length; i++) {
+                                        console.log(i);
+                                        let toAdd = {
+                                            name:'',
+                                            image: '',
+                                            role: ''
+                                        };
+                                        e = members[i];
+        
+                                        toAdd.name = e.name;
+                                        toAdd.image = e.image;
+                                        toAdd.role = e.role;
+        
+                                        // update values
+                                        vue.bandMembers.push(toAdd);
+                                    }
+                                }
+                            } 
+
+
+                            // handle experience
+                            console.log(experience);
+                            experience = experience.data.pastExperience;
+                            console.log("experience:");
+                            console.log(experience);
+
+                            if (typeof(experience != "undefined")) {
+                                if (experience.length > 0) {
+                                    vue.hasExperience = true;
+                                    
+                                    // iterate through experience
+                                    for (let i = 0; i < experience.length; i++) {
+                                        let toAdd = {
+                                            date:'',
+                                            location: '',
+                                            description: '',
+                                            image: ''
+                                        };
+                                        e = experience[i];
+        
+                                        toAdd.date = e.date;
+                                        toAdd.location = e.location;
+                                        toAdd.description = e.description;
+                                        toAdd.image = e.image;
+        
+                                        // update values
+                                        vue.gigs.push(toAdd);
+                                    }
+                                }
+                            }
+                        }
+                    )
+                },
+
+                getBandInfo() {
+                    var vue = this; // save to prevent clashing with XMLHTTPRequest()
+
+                    // get parameters from current url
+                    var params = new URLSearchParams(location.search);
+
+                    // get bandName from current url
+                    var bandName = params.get('bandName');
+                    return axios.get("../backend/api/band/searchBandsByName.php?bandName=" + bandName);
+                },
+
+                getBandMembers() {
+                    // const axios = require('axios').default;
+
+                    var vue = this; // save to prevent clashing with XMLHTTPRequest()
+
+                    // get parameters from current url
+                    var params = new URLSearchParams(location.search);
+
+                    // get bandName from current url
+                    var bandName = params.get('bandName');
+                    // console.log("Band name: " + bandName);
+                    // params.getAll('name'); // ["n1", "n2"]
+
+                    return axios.get("../backend/api/bandMembers/searchBandMembers.php?bandName=" + bandName);
+                    
+                },
+
+                getExperience() {
+                    var vue = this; // save to prevent clashing with XMLHTTPRequest()
+
+                    // get parameters from current url
+                    var params = new URLSearchParams(location.search);
+
+                    // get bandName from current url
+                    var bandName = params.get('bandName');
+                    // console.log("Band name: " + bandName);
+                    // params.getAll('name'); // ["n1", "n2"]
+
+                    return axios.get("../backend/api/pastExperience/searchPastExperience.php?bandName=" + bandName);
+                },
+                getImg: function(image) {
+                    if (image == null){
+                    return "./images/defaults/defaultgig.jpg"
+                    }
+                    return image
+                }
+
+                // getBandInfoOld() {
+                //     var vue = this; // save to prevent clashing with XMLHTTPRequest()
+
+                //     // get parameters from current url
+                //     var params = new URLSearchParams(location.search);
+
+                //     // get bandName from current url
+                //     var bandName = params.get('bandName');
+                //     console.log("getBandInfo(): Band name: " + bandName);
+                //     // params.getAll('name'); // ["n1", "n2"]
+
+                //     // get data from db
+                //     let request = new XMLHttpRequest();
+
+                //     request.onload = function() {
+                //         if (request.readyState == 4 && request.status == 200) {
+                //             let response = request.responseText;
+                //             console.log("getBandInfo(): response:" + response);
+                //             var json = JSON.parse(response)["bands"][0];
+                //             console.log(json);
+                            
+                //             // get values
+                //             var summary = json.summary;
+
+                //             // update values
+                //             vue.bandName = bandName;
+                //             vue.summary = summary;
+
+                //         }
+                //         request = null;
+                //     };
+
+                //     var url = "../backend/api/band/searchBandsByName.php?bandName=" + bandName;
+                //     request.open("GET", url, true);
+                //     request.send();
+                // },
+
+                // getBandMembersOld() {
+                //     var run = false;
+                //     var vue = this; // save to prevent clashing with XMLHTTPRequest()
+
+                //     // get parameters from current url
+                //     var params = new URLSearchParams(location.search);
+
+                //     // get bandName from current url
+                //     var bandName = params.get('bandName');
+                //     console.log("Band name: " + bandName);
+                //     // params.getAll('name'); // ["n1", "n2"]
+
+                //     // get data from db
+                //     let request = new XMLHttpRequest();
+
+                //     request.onload = function() {
+                //         if (request.readyState == 4 && request.status == 200 && run === false) {
+                //             run = true;
+                //             let response = request.responseText;
+                //             console.log("response:" + response);
+                //             var json = JSON.parse(response)["bandMembers"];
+                //             console.log(json);
+                //             console.log(json.length);
+
+                //             // get values
+                //             for (var i = 0; i < json.length; i++) {
+                //                 console.log(i);
+                //                 let toAdd = {
+                //                     name:'',
+                //                     image: '',
+                //                     role: ''
+                //                 };
+                //                 e = json[i];
+
+                //                 toAdd.name = e.name;
+                //                 toAdd.image = e.image;
+                //                 toAdd.role = e.role;
+
+                //                 // update values
+                //                 vue.bandMembers.push(toAdd);
+                //             }
+                //         }
+                //         request = null;
+                //     };
+
+                //     var url = "../backend/api/bandMembers/searchBandMembers.php?bandName=" + bandName;
+                //     request.open("GET", url, true);
+                //     request.send();
+                // },
+
+            }
+        })
+    </script>
+
+
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" integrity="sha384-w1Q4orYjBQndcko6MimVbzY0tgp4pWB4lZ7lr30WKz0vr/aWKhXdBNmNb5D92v7s" crossorigin="anonymous"></script>
+</body>
+</html>

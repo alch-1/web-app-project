@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Search Musicians</title>
+    <!-- Latest compiled and minified CSS -->
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!-- Popper JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script type="text/javascript" src="app.js"></script>
+    <link rel="stylesheet" type="text/css" href="search.css" />
+    <script src="https://unpkg.com/axios/dist/axios.js"></script>
+    <!-- Redirect Logic -->
+    <script>
+      if (localStorage.getItem("username") == null) {
+        window.location.href = "./home.html"
+      }
+    </script>
+  </head>
+
+  <body>
+    <div id="navbar-main">
+      <navbar-container
+        :user-Name="userName"
+        :biz-owner="bizOwner"
+        :current-page="currentPage"
+        :url="url"
+      />
+    </div>
+    <div id="app2" class="jumbotron-music">
+      <div class="jumbotron jumbotron-fluid jumbotron-music mb-n5">
+        <div class="container text-center">
+          <h1 class="display-4 text-white"><b>Search Musicians </b></h1>
+          <p class="lead text-white">
+            <b
+              >Listening to your new found favourite musician is just a search
+              button away!</b
+            >
+          </p>
+
+          <!-- Search form -->
+          <div>
+            <div class="d-flex justify-content-center">
+              <input
+                id="searchInput"
+                name="search"
+                @input="getBand"
+                class="form-control form-control-sm mr-3 w-50"
+                type="text"
+                placeholder="Search"
+                aria-label="Search"
+              />
+            </div>
+          </div>
+          <div
+            class="d-flex justify-content-center mt-5"
+            id="spinner-container"
+          >
+            <div
+              class="spinner-border text-justify mx-auto"
+              role="status"
+              id="loading-spinner"
+              style="color: white"
+            ></div>
+          </div>
+        </div>
+      </div>
+      <div class="container-fluid">
+        <div class="row justify-content-center">
+          <div class="col-sm text-center"></div>
+        </div>
+      </div>
+      <div class="container-fluid">
+        <div class="row justify-content-center">
+          <div class="col-sm text-left">
+            <div class="container mw-5">
+              <div class="card-columns">
+                <template>
+                  <div class="card bg-light mb-3" v-for="obj in bands">
+                    <img
+                      class="card-img-top"
+                      :src="getImg(obj.image)"
+                      alt="Gig image"
+                    />
+                    <div class="card-body">
+                      <h5 class="card-title">{{obj.bandName}}</h5>
+                      <p class="card-text">{{obj.summary}}</p>
+                      <p class="card-text">
+                        <medium>
+                          <b>Genre: </b>{{obj.genre}} <br />
+                          <b>Band Type: </b>{{obj.bandType}} <br />
+                          <b>Website: </b>
+                          <a :href="obj.website" class="card-link"
+                            >Click here</a
+                          >
+                        </medium>
+                      </p>
+                      <a
+                        :href="'../app/profile.html?bandName='+obj.bandName"
+                        class="btn btn-dark"
+                        >View Band</a
+                      >
+                      <p></p>
+                      <footer class="blockquote-footer">
+                        <medium class="text-muted">
+                          <cite title="">{{obj.username}}</cite>
+                        </medium>
+                      </footer>
+                    </div>
+                  </div>
+                </template>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="container-fluid pt-2" style="background-color: black">
+        <footer class="text-right">
+          <div class="pr-4">Gig-E Pte Ltd.<br /></div>
+          <a href="#" class="fa fa-facebook"></a>
+          <a href="#" class="fa fa-twitter"></a>
+          <a href="#" class="fa fa-instagram"></a>
+        </footer>
+      </div>
+    </div>
+    <script>
+      var vm = new Vue({
+        el: "#navbar-main",
+        data: {
+          userName: "zxc12123c",
+          bizOwner: false,
+          currentPage: "searchGig",
+          url: "",
+        },
+        created: function () {
+          // call api here to find props
+          var username = localStorage.getItem("username");
+          var userType = localStorage.getItem("userType");
+          this.userName = username;
+          this.bizOwner = userType == "seeker" ? true : false;
+          var url = "../backend/api/band/getBandByUsername.php";
+          axios
+            .get(url, {
+              params: {
+                username: localStorage.getItem("username"),
+              },
+            })
+            .then((response) => {
+              console.log(response.data.bands[0].bandName);
+              this.url = `./profile.html?bandName=${response.data.bands[0].bandName}`;
+            })
+            .catch((error) => {
+              console.log("There was an error: " + error.message);
+            });
+        },
+      });
+
+      var bands = new Vue({
+        el: "#app2",
+        data: {
+          bands: [],
+          allbands: [],
+          test: "This is working",
+        },
+        mounted: function () {
+          var dis = this;
+          const http = new XMLHttpRequest();
+          const url = "../backend/api/band/getAllBands.php";
+          http.open("GET", url);
+          http.send();
+
+          http.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+              var obj = JSON.parse(http.responseText)["bands"];
+              //console.log(obj);
+              for (i = 0; i < obj.length; i++) {
+                dis.bands.push(obj[i]);
+                dis.allbands.push(obj[i]);
+              }
+              document.querySelector("#spinner-container").remove();
+              console.log("This first part is working");
+              console.log(dis.bands);
+            }
+          };
+        },
+
+        methods: {
+          getBand: function () {
+            //console.log(this.$refs.form.bid.value);
+            var searchName = document.getElementById("searchInput").value;
+            var newBands = []
+            for (var band of this.allbands){
+              var bName = (band.bandName).toLowerCase()
+              if (bName.search(searchName.toLowerCase()) != -1) {
+                newBands.push(band);
+              }
+            }
+            this.bands = newBands;
+          },
+          getImg: function(image) {
+            if (image == null){
+              return "./images/defaults/defaultgig.jpg"
+            }
+            return image
+          }
+        },
+      });
+    </script>
+  </body>
+</html>

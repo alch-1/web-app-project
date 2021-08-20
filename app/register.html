@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- bootstrap css -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
+      integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2"
+      crossorigin="anonymous"
+    />
+    <link href="./hover.css" rel="stylesheet" />
+    <script src="https://unpkg.com/axios/dist/axios.js"></script>
+
+    <title>Register</title>
+
+    <style type="text/css">
+      .fade-enter-active,
+      .fade-leave-active {
+        transition: opacity 0.5s;
+      }
+      .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+        opacity: 0;
+      }
+
+      .temp {
+        background-image: url(./images/darkGuitar8.jpg);
+        background-attachment: fixed;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+      }
+    </style>
+    <script>
+      if (localStorage.getItem("userType") == "musician") {
+        window.location.href = "../app/searchGigs.html";
+      } else if (localStorage.getItem("userType") == "seeker") {
+        window.location.href = "../app/searchMusicians.html";
+      }
+    </script>
+  </head>
+  <body style="background-color: #30343b; color: white">
+    <!-- development version, includes helpful console warnings -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+    <!-- axios -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <!-- Registration page -->
+    <div id="app" class="temp">
+      <div class="container pb-5">
+        <!-- Intro text -->
+        <div class="jumbotron text-center temp" style="color: white">
+          <h2>Sign Up</h2>
+          <p class="lead">Let's get started.</p>
+        </div>
+
+        <!-- Dropdown to select user type -->
+        <div class="form-group p-5">
+          <p class="text-center">I am...</p>
+          <select class="form-control" id="typeForm" v-model="type">
+            <!-- <option selected disabled>I am</option> -->
+            <option value="seeker">Looking for musicians</option>
+            <option value="musician">A musician/band</option>
+          </select>
+        </div>
+
+        <transition name="fade">
+          <!-- Form for seeker -->
+          <div v-if="type == 'seeker'">
+            <div class="form-group p-5">
+              <p class="text-center">
+                Just a few quick questions before we can start looking for
+                musicians:
+              </p>
+              <hr class="my-4" />
+              <input
+                v-model="name"
+                name="seekerName"
+                type="text"
+                class="form-control my-4"
+                placeholder="What is your name/company name?"
+              />
+              <input
+                v-model="seekerDescription"
+                name="description"
+                type="text"
+                class="form-control my-4"
+                placeholder="What kind of musicians are you looking for?"
+              />
+              <input
+                v-model="seekerWebsite"
+                name="website"
+                type="text"
+                class="form-control my-4"
+                placeholder="What is your website? (Optional)"
+              />
+            </div>
+            <button
+              data-toggle="modal"
+              data-target="#exampleModal"
+              class="btn btn-light hvr-grow mx-5"
+              v-on:click="submit()"
+            >
+              Submit
+            </button>
+
+            <!-- Modal popup -->
+            <div
+              class="modal fade"
+              id="exampleModal"
+              tabindex="-1"
+              role="dialog"
+              aria-labelledby="exampleModalLabel"
+              aria-hidden="true"
+              style="color: black"
+            >
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">
+                      Sign Up Successful
+                    </h5>
+                    <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button> -->
+                  </div>
+                  <div class="modal-body">
+                    <p>Congratulations! You've signed up!</p>
+                  </div>
+                  <div class="modal-footer">
+                    <button
+                      type="button"
+                      class="btn btn-light"
+                      data-dismiss="modal"
+                      v-on:click="redirectSeeker()"
+                    >
+                      Nice!
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </transition>
+
+        <transition name="fade">
+          <!-- Form for musician/band -->
+          <div v-if="type == 'musician'">
+            <div class="form-group p-5">
+              <p class="text-center">
+                Just a few quick questions before we can start looking for gigs:
+              </p>
+              <hr class="my-4" />
+              <p class="text-center">I am registering as a...</p>
+              <select
+                v-model="bandType"
+                name="bandType"
+                id="bandType"
+                class="form-control"
+              >
+                <!-- <option selected disabled hidden>Choose type</option> -->
+                <option value="solo">Solo musician</option>
+                <option value="band">Band</option>
+              </select>
+
+              <transition name="fade">
+                <!-- Musicians -->
+                <div v-if="bandType == 'solo' || bandType == 'band'">
+                  <hr class="my-4" />
+
+                  <input
+                    v-model="name"
+                    name="bandName"
+                    type="text"
+                    class="form-control my-4"
+                    placeholder="What is your name/band name?"
+                  />
+                  <p class="text-center">My genre is...</p>
+                  <select
+                    v-model="genre"
+                    class="form-control"
+                    id="genre"
+                    name="genre"
+                  >
+                    <!-- <option selected disabled>Choose genre</option> -->
+                    <option>Rock</option>
+                    <option>Blues</option>
+                    <option>Folk</option>
+                    <option>Pop</option>
+                    <option>Metal</option>
+                    <option>Classical</option>
+                    <option>Country</option>
+                    <option>Jazz</option>
+                    <option>Funk</option>
+                  </select>
+
+                  <input
+                    v-model="bandWebsite"
+                    name="website"
+                    type="text"
+                    class="form-control my-4"
+                    placeholder="What is your website? (Optional)"
+                  />
+                  <input
+                    v-model="bandDescription"
+                    name="description"
+                    type="text"
+                    class="form-control my-4"
+                    placeholder="Describe your band here! (E.g. killer rock band from Singapore)"
+                  />
+                  <p class="text-center">
+                    Upload your band's profile picture here (Max 2mb)
+                  </p>
+                  <input
+                    id="profileImage"
+                    name="image"
+                    type="file"
+                    accept="image/*"
+                    class="file form-control"
+                    data-show-preview="false"
+                  />
+                  <transition name="fade">
+                    <!-- Bands -->
+                    <div v-if="bandType == 'band'" id="bandInputsMaster">
+                      <h2 class="text-center my-4">Band Member Info</h2>
+                      <hr class="my-4" />
+                      <h5 class="my-4 text-center">
+                        Band Member 1's Information
+                      </h5>
+
+                      <!-- Input fields for band members -->
+                      <div class="form-group bandInputs" id="bandInputs">
+                        <input
+                          id="memberName"
+                          name="memberName1"
+                          type="text"
+                          class="form-control my-4"
+                          placeholder="Enter band member's name"
+                        />
+                        <input
+                          id="role"
+                          name="role1"
+                          type="text"
+                          class="form-control my-4"
+                          placeholder="Enter band member's role"
+                        />
+                        <p class="text-center">
+                          Upload band member 1's image (Max 2mb)
+                        </p>
+                        <input
+                          id="memberImage"
+                          name="memberImage"
+                          type="file"
+                          class="file form-control my-4"
+                          data-show-preview="false"
+                        />
+                        <!-- document.getElementById('imgup1').value; -->
+                      </div>
+
+                      <!-- Delete input field button -->
+                      <div v-if="this.showDeleteBandMembers === true">
+                        <button
+                          class="btn btn-light mt-5 hvr-grow"
+                          v-on:click="[deleteBandMembers(), checkDeleteBandMembers()]"
+                        >
+                          Delete band member
+                        </button>
+                      </div>
+
+                      <!-- Add button to let user add more band members -->
+                      <button
+                        class="btn btn-light my-5 hvr-grow"
+                        v-on:click="[addBandMember(), checkDeleteBandMembers()]"
+                      >
+                        Add band member
+                      </button>
+                    </div>
+                  </transition>
+
+                  <div id="expInputsMaster">
+                    <!-- Past experience -->
+                    <h2 class="text-center">Past Experience</h2>
+                    <hr class="my-4" />
+                    <div class="form-group my-5 expInputs" id="expInputs">
+                      <h5 class="text-center my-4">
+                        Past Experience 1 Information
+                      </h5>
+                      <p class="text-center">When did you perform?</p>
+                      <input
+                        id="date"
+                        name="date1"
+                        type="date"
+                        class="form-control my-4"
+                        v-bind:max="today"
+                      />
+
+                      <input
+                        id="location"
+                        name="location1"
+                        type="text"
+                        class="form-control my-4"
+                        placeholder="Where did you perform?"
+                      />
+                      <input
+                        id="postal"
+                        name="postal1"
+                        type="text"
+                        class="form-control my-4"
+                        placeholder="What is the postal code of where you performed?"
+                      />
+                      <input
+                        id="description"
+                        name="gigDescription1"
+                        type="text"
+                        class="form-control my-4"
+                        placeholder="Please describe the performance!"
+                      />
+
+                      <p class="text-center">
+                        Upload image of performance 1 (Max 2mb)
+                      </p>
+                      <input
+                        id="gigImage"
+                        name="gigImage"
+                        type="file"
+                        class="file form-control my-4"
+                        data-show-preview="false"
+                      />
+                      <!-- document.getElementById('imgup1').value; -->
+                    </div>
+
+                    <!-- Delete input field button -->
+                    <div v-if="this.showDeleteExp === true">
+                      <button
+                        class="btn btn-light mt-5 hvr-grow"
+                        v-on:click="[deleteExp(), checkDeleteExp()]"
+                      >
+                        Delete past experience
+                      </button>
+                    </div>
+
+                    <!-- Add button to let user add more experience -->
+                    <button
+                      class="btn btn-light my-5 hvr-grow"
+                      v-on:click="[addExperience(), checkDeleteExp()]"
+                    >
+                      Add past experience
+                    </button>
+                  </div>
+
+                  <p>
+                    <button
+                      data-toggle="modal"
+                      data-target="#exampleModal"
+                      class="btn btn-light hvr-grow"
+                      v-on:click="submit()"
+                    >
+                      Submit
+                    </button>
+                  </p>
+
+                  <!-- Modal popup -->
+                  <div
+                    class="modal fade"
+                    id="exampleModal"
+                    tabindex="-1"
+                    role="dialog"
+                    aria-labelledby="exampleModalLabel"
+                    aria-hidden="true"
+                    style="color: black"
+                  >
+                    <div class="modal-dialog" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="exampleModalLabel">
+                            Sign Up Successful
+                          </h5>
+                          <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button> -->
+                        </div>
+                        <div class="modal-body">
+                          <p>Congratulations! You've signed up!</p>
+                        </div>
+                        <div class="modal-footer">
+                          <button
+                            type="button"
+                            class="btn btn-secondary"
+                            data-dismiss="modal"
+                            v-on:click="redirectMusician()"
+                          >
+                            Nice!
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </transition>
+            </div>
+          </div>
+        </transition>
+      </div>
+      {{ validateDate() }} {{ setType() }}
+    </div>
+
+    <script>
+      new Vue({
+        el: "#app",
+        data: {
+          username: "",
+          name: "",
+          type: "",
+          bandType: "",
+          seekerDescription: "",
+          seekerWebsite: "",
+          bandDescription: "",
+          bandWebsite: "",
+          genre: "",
+          count: 1,
+          gigCount: 1,
+          firstRun: true,
+          showDeleteBandMembers: false,
+          showDeleteExp: false,
+        },
+        mounted() {
+          this.mt(); // run when mounted
+        },
+        computed: {
+          // run when a property value that is being referenced by the
+          // this word in its function definition changes
+          today: function () {
+            var today = new Date().toISOString().split("T")[0];
+            return today;
+          },
+        },
+        methods: {
+          redirectMusician() {
+            window.location.href = "../app/searchGigs.html";
+          },
+          redirectSeeker() {
+            window.location.href = "../app/searchMusicians.html";
+          },
+          mt() {
+            // to run when mounted
+            this.username = localStorage.getItem("username");
+            // this.username = Math.random().toString(36).substring(8); // for testing
+
+            console.log("mounted... username: " + this.username);
+          },
+
+          setType() {
+            localStorage.setItem("userType", this.type);
+            var url = "../backend/api/band/getBandByUsername.php";
+            axios
+              .get(url, {
+                params: {
+                  username: localStorage.getItem("username"),
+                },
+              })
+              .then((response) => {
+                localStorage.setItem(
+                  "bandName",
+                  response.data.bands[0].bandName
+                );
+              })
+              .catch((error) => {
+                console.log("There was an error: " + error.message);
+              });
+          },
+
+          validateDate() {
+            var today = new Date().toISOString().split("T")[0];
+            var dates = document.querySelectorAll("input[type='date']"); // returns NodeList'
+            console.log(dates);
+            for (date of dates) {
+              date.setAttribute("max", today);
+            }
+          },
+
+          addBandMember() {
+            // <div v-if="bandType == 'band'" id="bandInputsMaster">
+            //         <h2 class="text-center">Band Member Info</h2>
+            //         <hr class="my-4">
+            //         <h5 class="my-4 text-center">Band Member 1's Information</h5>
+
+            //         <!-- Input fields for band members -->
+            //         <div class="form-group" id="bandInputs">
+            //             <input id="memberName" name="memberName1" type="text" class="form-control my-4" placeholder="Enter band member's name">
+            //             <input id="role" name="role1" type="text" class="form-control my-4" placeholder="Enter band member's role">
+            //             <p class="text-center">Upload band member 1's image</p>
+            //             <input id="image1" name="memberImage" type="file" class="file form-control my-4" data-show-preview="false">
+            //             <!-- document.getElementById('imgup1').value; -->
+            //         </div>
+
+            //         <!-- Add button to let user add more band members -->
+            //         <button class="btn btn-light my-5 hvr-grow" v-on:click="addBandMember()">Add band member</button>
+            //     </div>
+
+            this.count++;
+
+            var bandInputs = document.getElementById("bandInputs");
+
+            var h5 = document.createElement("h5");
+            h5.className = "my-4 text-center";
+            h5.appendChild(
+              document.createTextNode(
+                "Band Member " + String(this.count) + "'s Information"
+              )
+            );
+
+            var formGroup = document.createElement("div");
+            formGroup.className = "form-group bandInputs";
+            formGroup.id = "bandInputs";
+
+            var memberName = document.createElement("input");
+            memberName.name = "memberName" + String(this.count);
+            memberName.type = "text";
+            memberName.id = "memberName";
+            memberName.className = "form-control my-4";
+            memberName.placeholder = "Enter band member's name";
+
+            formGroup.appendChild(memberName);
+
+            var role = document.createElement("input");
+            role.name = "role" + String(this.count);
+            role.type = "text";
+            role.id = "role";
+            role.className = "form-control my-4";
+            role.placeholder = "Enter band member's role";
+
+            formGroup.appendChild(role);
+
+            var p = document.createElement("p");
+            p.className = "text-center";
+            p.appendChild(
+              document.createTextNode(
+                "Upload band member " +
+                  String(this.count) +
+                  "'s image (Max 2mb)"
+              )
+            );
+
+            formGroup.appendChild(p);
+
+            var fileUpload = document.createElement("input");
+            fileUpload.name = "image" + String(this.count);
+            fileUpload.type = "file";
+            fileUpload.className = "file form-control my-4";
+            fileUpload.id = "memberImage";
+
+            formGroup.appendChild(fileUpload);
+
+            bandInputs.appendChild(h5);
+            bandInputs.appendChild(formGroup);
+          },
+
+          addExperience() {
+            // <div id="expInputsMaster">
+            //         <!-- Past experience -->
+            //         <h2 class="text-center">Past Experience</h2>
+            //         <hr class="my-4">
+            //         <div class="form-group my-5" id="expInputs">
+            //             <h5 class="text-center my-4 ">Past Experience 1 Information</h5>
+            //             <p class="text-center">When did you perform?</p>
+            //             <input id="date" name="date1" type="date" class="form-control my-4">
+            //             <input id="location" name="location1" type="text" class="form-control my-4" placeholder="Where did you perform?">
+            //             <input id="postal" name="postal1" type="text" class="form-control my-4" placeholder="What is the postal code of where you performed?">
+            //             <input id="description "name="gigDescription1" type="text" class="form-control my-4" placeholder="Please describe the performance!">
+
+            //             <p class="text-center">Upload image of performance 1</p>
+            //             <input id="gigImage1" name="gigImage" type="file" class="file form-control my-4" data-show-preview="false">
+            //             <!-- document.getElementById('imgup1').value; -->
+            //         </div>
+
+            this.gigCount++;
+
+            var gigInput = document.getElementById("expInputs");
+
+            var h5 = document.createElement("h5");
+            h5.className = "my-4 text-center";
+            h5.appendChild(
+              document.createTextNode(
+                "Past Experience " + String(this.gigCount) + " Information"
+              )
+            );
+
+            var formGroup = document.createElement("div");
+            formGroup.className = "form-group expInputs";
+            formGroup.id = "expInputs";
+
+            var p = document.createElement("p");
+            p.className = "text-center";
+            p.appendChild(document.createTextNode("When did you perform?"));
+
+            formGroup.appendChild(p);
+
+            var date = document.createElement("input");
+            date.name = "date" + String(this.gigCount);
+            date.type = "date";
+            date.id = "date";
+            date.className = "form-control my-4";
+
+            formGroup.appendChild(date);
+
+            var location = document.createElement("input");
+            location.name = "location" + String(this.gigCount);
+            location.type = "text";
+            location.id = "location";
+            location.className = "form-control my-4";
+            location.placeholder = "Where did you perform?";
+
+            formGroup.appendChild(location);
+
+            var postal = document.createElement("input");
+            postal.name = "postal" + String(this.gigCount);
+            postal.type = "text";
+            postal.id = "postal";
+            postal.className = "form-control my-4";
+            postal.placeholder =
+              "What is the postal code of where you performed?";
+
+            formGroup.appendChild(postal);
+
+            var description = document.createElement("input");
+            description.name = "gigDescription" + String(this.gigCount);
+            description.type = "text";
+            description.id = "description";
+            description.className = "form-control my-4";
+            description.placeholder = "Please describe the performance!";
+
+            formGroup.appendChild(description);
+
+            var p2 = document.createElement("p");
+            p2.className = "text-center";
+            p2.appendChild(
+              document.createTextNode(
+                "Upload image of performance " +
+                  String(this.gigCount) +
+                  " (Max 2mb)"
+              )
+            );
+
+            formGroup.appendChild(p2);
+
+            var fileUpload = document.createElement("input");
+            fileUpload.name = "gigImage" + String(this.gigCount);
+            fileUpload.type = "file";
+            fileUpload.className = "file form-control my-4";
+            fileUpload.id = "gigImage";
+
+            formGroup.appendChild(fileUpload);
+
+            gigInput.appendChild(h5);
+            gigInput.appendChild(formGroup);
+          },
+
+          submit() {
+            console.log("Submitting...");
+            // update db with information, redirect to another page
+            if (this.type === "seeker") {
+              this.submitSeeker();
+            } else if (this.type === "musician") {
+              if (this.bandType === "band") {
+                this.submitBand();
+              } else if (this.bandType === "solo") {
+                this.submitSolo();
+              }
+            } else {
+              // this shouldn't happen
+            }
+          },
+
+          submitSeeker() {
+            Promise.all([this.makeUser(), this.makeProfile()]).then(function (
+              results
+            ) {
+              console.log("submitting for seeker...");
+              var user = results[0];
+              var profile = results[1];
+
+              console.log(user);
+              console.log(profile);
+            });
+          },
+
+          submitBand() {
+            Promise.all([
+              this.makeUser(),
+              this.makeProfile(),
+              this.makeBandMembers(),
+              this.makeExperience(),
+            ]).then(function (results) {
+              console.log("submitting for band...");
+              var user = results[0];
+              var profile = results[1];
+              var members = results[2];
+              var experience = results[3];
+
+              console.log(user);
+              console.log(profile);
+              console.log(members);
+              console.log(experience);
+            });
+          },
+
+          submitSolo() {
+            Promise.all([
+              this.makeUser(),
+              this.makeProfile(),
+              this.makeExperience(),
+            ]).then(function (results) {
+              console.log("submitting for solo...");
+              var user = results[0];
+              var profile = results[1];
+              var experience = results[2];
+
+              console.log(user);
+              console.log(profile);
+              console.log(experience);
+            });
+          },
+
+          makeUser() {
+            // make user
+            console.log("making user...");
+            var username = this.username;
+            var name = this.name;
+            var type = this.type;
+
+            console.log(username);
+            console.log(name);
+            console.log(type);
+
+            let params1 = new FormData();
+
+            params1.append("username", username);
+            params1.append("name", name);
+            params1.append("type", type);
+
+            return axios({
+              url: "../backend/api/users/createUser.php",
+              method: "post",
+              data: params1,
+              headers: {
+                // "Content-Type": "application/x-www-form-urlencoded"
+                "Content-Type": "multipart/form-data",
+              },
+            });
+          },
+
+          makeProfile() {
+            var username = this.username;
+
+            if (this.type === "seeker") {
+              console.log("Making profile for seeker...");
+              var website = this.seekerWebsite;
+              var description = this.seekerDescription;
+
+              console.log(website);
+              console.log(description);
+
+              let params = new FormData();
+
+              params.append("username", username);
+              params.append("website", website);
+              params.append("description", description);
+
+              return axios({
+                url: "../backend/api/seekers/createSeeker.php",
+                method: "post",
+                data: params,
+                headers: {
+                  "Content-Type": "application/x-www-form-urlencoded",
+                  // 'Content-Type': 'multipart/form-data'
+                },
+              });
+            } else if (this.type === "musician") {
+              console.log("Making profile for band...");
+              var website = this.bandWebsite;
+              var description = this.bandDescription;
+              var genre = this.genre;
+              var bandName = this.name;
+
+              var image = document.getElementById("profileImage").files;
+              console.log("profile image:");
+              console.log(image);
+              console.log("profile image length:" + image.length);
+              if (image.length == 0) {
+                image = null;
+              } else {
+                image = image[0];
+              }
+
+              console.log(username);
+              console.log(website);
+              console.log(description);
+              console.log(genre);
+              console.log(bandName);
+
+              var params2 = new FormData();
+
+              params2.append("username", username);
+              params2.append("bandName", bandName);
+              params2.append("website", website);
+              params2.append("summary", description);
+              params2.append("genre", genre);
+              params2.append("image", image);
+
+              console.log("form data:");
+              for (var pair of params2.entries()) {
+                console.log(pair[0] + ", " + pair[1]);
+              }
+
+              // return axios({
+              //     url: "../backend/api/band/createBand.php",
+              //     method: "post",
+              //     data: params,
+              //     headers: {
+              //         // "Content-Type": "application/x-www-form-urlencoded"
+              //         'Content-Type': 'multipart/form-data'
+              //     }
+              // });
+
+              return axios.post("../backend/api/band/createBand.php", params2);
+            } else {
+              // this shouldn't happen
+            }
+          },
+
+          makeBandMembers() {
+            // <div v-if="bandType == 'band'" id="bandInputsMaster">
+            //         <h2 class="text-center">Band Member Info</h2>
+            //         <hr class="my-4">
+            //         <h5 class="my-4 text-center">Band Member 1's Information</h5>
+
+            //         <!-- Input fields for band members -->
+            //         <div class="form-group bandInputs" id="bandInputs">
+            //             <input id="memberName" name="memberName1" type="text" class="form-control my-4" placeholder="Enter band member's name">
+            //             <input id="role" name="role1" type="text" class="form-control my-4" placeholder="Enter band member's role">
+            //             <p class="text-center">Upload band member 1's image</p>
+            //             <input id="image1" name="memberImage" type="file" class="file form-control my-4" data-show-preview="false">
+            //             <!-- document.getElementById('imgup1').value; -->
+            //         </div>
+            var vue = this;
+            var allMembers = document.getElementById("bandInputsMaster");
+            var bandInputs = document.getElementsByClassName("bandInputs");
+            console.log("allMembers " + allMembers);
+            var len = bandInputs.length;
+            var data = [];
+            for (let i = 0; i < len; i++) {
+              bandInput = bandInputs[i];
+              var toAdd = {
+                memberName: "",
+                role: "",
+                image: "",
+              };
+              // can't call getElementById on this one. Strange
+              toAdd.memberName = bandInput.querySelector("#memberName").value;
+              console.log("member name:" + toAdd.memberName);
+              toAdd.role = bandInput.querySelector("#role").value;
+              console.log("role:" + role);
+
+              var image = bandInput.querySelector("#memberImage").files;
+              console.log("makebandmembers image:" + image);
+              console.log("makebandmembers image length:" + image.length);
+              if (image.length == 0) {
+                image = null;
+              } else {
+                image = image[0];
+              }
+              toAdd.image = image;
+
+              data.push(toAdd);
+            }
+            console.log("data");
+            console.log(data);
+
+            var promises = [];
+
+            for (let i = 0; i < data.length; i++) {
+              var dict = data[i];
+              console.log("dict:");
+              console.log(dict);
+
+              var params3 = new FormData();
+              console.log(vue.name);
+              console.log(dict.memberName);
+              console.log(dict.role);
+              params3.append("bandName", vue.name);
+              params3.append("name", dict.memberName);
+              params3.append("image", image);
+              params3.append("role", dict.role);
+
+              console.log("params:");
+              for (var pair of params3.entries()) {
+                console.log(pair[0] + ", " + pair[1]);
+              }
+
+              promises.push(
+                axios.post(
+                  "../backend/api/bandMembers/createBandMember.php",
+                  params3
+                )
+              );
+            }
+
+            Promise.all(promises).then(function (responses) {
+              console.log(responses);
+            });
+          },
+
+          makeExperience() {
+            // <div id="expInputsMaster">
+            //         <!-- Past experience -->
+            //         <h2 class="text-center">Past Experience</h2>
+            //         <hr class="my-4">
+            //         <div class="form-group my-5 expInputs" id="expInputs">
+            //             <h5 class="text-center my-4 ">Past Experience 1 Information</h5>
+            //             <p class="text-center">When did you perform?</p>
+            //             <input id="date" name="date1" type="date" class="form-control my-4">
+            //             <input id="location" name="location1" type="text" class="form-control my-4" placeholder="Where did you perform?">
+            //             <input id="postal" name="postal1" type="text" class="form-control my-4" placeholder="What is the postal code of where you performed?">
+            //             <input id="description" name="gigDescription1" type="text" class="form-control my-4" placeholder="Please describe the performance!">
+
+            var vue = this;
+            var allExp = document.getElementById("expInputsMaster");
+            var expInputs = document.getElementsByClassName("expInputs");
+            console.log("allExp " + allExp);
+            var len = expInputs.length;
+            var data = [];
+            for (let i = 0; i < len; i++) {
+              expInput = expInputs[i];
+              var toAdd = {
+                // bandName: '',
+                date: "",
+                location: "",
+                postalCode: "",
+                description: "",
+                image: "",
+              };
+
+              // toAdd.bandName = vue.name;
+              // console.log("band name:"+toAdd.bandName);
+
+              toAdd.date = expInput.querySelector("#date").value;
+              console.log("date:" + toAdd.date);
+
+              toAdd.location = expInput.querySelector("#location").value;
+              console.log("location:" + toAdd.location);
+
+              toAdd.postalCode = expInput.querySelector("#postal").value;
+              console.log("postal:" + toAdd.postalCode);
+
+              toAdd.description = expInput.querySelector("#description").value;
+              console.log("description:" + toAdd.description);
+
+              var image = expInput.querySelector("#gigImage").files;
+              console.log("makeexperience image:" + image);
+              console.log("makeexperience image length:" + image.length);
+
+              if (image.length == 0) {
+                image = null;
+              } else {
+                image = image[0];
+              }
+              toAdd.image = image;
+
+              data.push(toAdd);
+            }
+            console.log("data");
+            console.log(data);
+
+            var promises = [];
+
+            for (let i = 0; i < data.length; i++) {
+              var dict = data[i];
+              console.log("dict:");
+              console.log(dict);
+
+              var params5 = new FormData();
+              console.log(vue.name);
+              console.log(dict.date);
+              console.log(dict.location);
+              console.log(dict.postalCode);
+              console.log(dict.description);
+
+              params5.append("bandName", vue.name);
+              params5.append("date", dict.date);
+              params5.append("location", dict.location);
+              params5.append("postalCode", dict.postalCode);
+              params5.append("description", dict.description);
+              params5.append("image", image);
+
+              console.log("params:");
+              for (var pair of params5.entries()) {
+                console.log(pair[0] + ", " + pair[1]);
+              }
+
+              promises.push(
+                axios.post(
+                  "../backend/api/pastExperience/createPastExperience.php",
+                  params5
+                )
+              );
+            }
+
+            Promise.all(promises).then(function (responses) {
+              console.log(responses);
+            });
+          },
+
+          checkDeleteBandMembers() {
+            // this.firstRun = false;
+            // var wrapper = document.querySelector("#bandInputsMaster");
+            // var divLength = wrapper.getElementsByTagName("div").length;
+            // console.log("div length:" + divLength);
+
+            if (this.count > 1) {
+              this.showDeleteBandMembers = true;
+            } else {
+              this.showDeleteBandMembers = false;
+            }
+          },
+
+          deleteBandMembers() {
+            console.log("deleting band members...");
+            var wrapper = document.getElementById("bandInputsMaster");
+            console.log(wrapper);
+
+            // to get the 2nd last div:
+            var lastDiv = wrapper.getElementsByTagName("div")[
+              wrapper.getElementsByTagName("div").length - 2
+            ];
+            console.log(lastDiv);
+            lastDiv.remove();
+
+            // to get the last header:
+            var lastHeader = wrapper.getElementsByTagName("h5")[
+              wrapper.getElementsByTagName("h5").length - 1
+            ];
+            console.log(lastHeader);
+            lastHeader.remove();
+
+            this.count--;
+          },
+
+          checkDeleteExp() {
+            if (this.gigCount > 1) {
+              this.showDeleteExp = true;
+            } else {
+              this.showDeleteExp = false;
+            }
+          },
+
+          deleteExp() {
+            console.log("deleting band exp...");
+            var wrapper = document.getElementById("expInputsMaster");
+            console.log(wrapper);
+
+            // to get the 2nd last div:
+            var lastDiv = wrapper.getElementsByTagName("div")[
+              wrapper.getElementsByTagName("div").length - 2
+            ];
+            console.log(lastDiv);
+            lastDiv.remove();
+
+            // to get the last header:
+            var lastHeader = wrapper.getElementsByTagName("h5")[
+              wrapper.getElementsByTagName("h5").length - 1
+            ];
+            console.log(lastHeader);
+            lastHeader.remove();
+
+            this.gigCount--;
+          },
+        },
+      });
+    </script>
+
+    <script
+      src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+      integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+      integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js"
+      integrity="sha384-w1Q4orYjBQndcko6MimVbzY0tgp4pWB4lZ7lr30WKz0vr/aWKhXdBNmNb5D92v7s"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>
